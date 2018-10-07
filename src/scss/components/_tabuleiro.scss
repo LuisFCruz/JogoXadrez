@@ -1,0 +1,103 @@
+.tabuleiro {
+  $size: 560px;
+  display: grid;
+  border: 1px solid;
+  width: $size;
+  height: $size;
+
+  grid-template-columns: 70px 70px 70px 70px 70px 70px 70px 70px;
+  grid-template-rows: 70px 70px 70px 70px 70px 70px 70px 70px;
+  grid-gap: 0;
+ 
+  .casa {
+    &-preta {
+      background-color: #999; 
+    }
+
+    &-branca {
+      background-color: #fff; 
+    }
+
+    &-preta,
+    &-branca {
+      font-size: 48px;
+      text-align: center;
+    }
+  }
+
+  .peca-branca {
+    &--peao {
+      &::before {
+        content: "♙";
+      }
+    }
+
+    &--rainha {
+      &::before {
+        content: "♕";
+      }
+    }
+
+    &--bispo {
+      &::before {
+        content: "♗";
+      }
+    }
+
+    &--cavalo {
+      &::before {
+        content: "♘";
+      }
+    }
+
+    &--torre {
+      &::before {
+        content: "♖";
+      }
+    }
+
+    &--rei {
+      &::before {
+        content: "♔";
+      }
+    }
+  }
+
+  .peca-preta {
+    &--peao {
+      &::before {
+        content: "♟";
+      }
+    }
+
+    &--rainha {
+      &::before {
+        content: "♛";
+      }
+    }
+
+    &--bispo {
+      &::before {
+        content: "♝";
+      }
+    }
+
+    &--cavalo {
+      &::before {
+        content: "♞";
+      }
+    }
+
+    &--torre {
+      &::before {
+        content: "♜";
+      }
+    }
+
+    &--rei {
+      &::before {
+        content: "♚";
+      }
+    }
+  }
+}
