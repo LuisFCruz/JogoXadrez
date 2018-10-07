@@ -28,37 +28,37 @@
   .peca-branca {
     &--peao {
       &::before {
-        content: "♙";
+        content: "\2659";
       }
     }
 
     &--rainha {
       &::before {
-        content: "♕";
+        content: "\2655";
       }
     }
 
     &--bispo {
       &::before {
-        content: "♗";
+        content: "\2657";
       }
     }
 
     &--cavalo {
       &::before {
-        content: "♘";
+        content: "\2658";
       }
     }
 
     &--torre {
       &::before {
-        content: "♖";
+        content: "\2656";
       }
     }
 
     &--rei {
       &::before {
-        content: "♔";
+        content: "\2654";
       }
     }
   }
@@ -66,37 +66,37 @@
   .peca-preta {
     &--peao {
       &::before {
-        content: "♟";
+        content: "\265F";
       }
     }
 
     &--rainha {
       &::before {
-        content: "♛";
+        content: "\265B";
       }
     }
 
     &--bispo {
       &::before {
-        content: "♝";
+        content: "\265D";
       }
     }
 
     &--cavalo {
       &::before {
-        content: "♞";
+        content: "\265E";
       }
     }
 
     &--torre {
       &::before {
-        content: "♜";
+        content: "\265C";
       }
     }
 
     &--rei {
       &::before {
-        content: "♚";
+        content: "\265A";
       }
     }
   }
