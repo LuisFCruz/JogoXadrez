@@ -1,0 +1,37 @@
+{
+  "name": "jogoxadrez",
+  "version": "1.0.0",
+  "description": "Aprendendo a fazer um jogo de xadrez com javascript, html e css",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@webpack-cli/init": "^0.1.2",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^1.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.9.3",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.0",
+    "webpack": "^4.20.2",
+    "webpack-dev-server": "^3.1.9"
+  },
+  "scripts": {
+    "start:dev": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuisFCruz/JogoXadrez.git"
+  },
+  "keywords": [
+    "jogo",
+    "xadrez"
+  ],
+  "author": "Luis Cruz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuisFCruz/JogoXadrez/issues"
+  },
+  "homepage": "https://github.com/LuisFCruz/JogoXadrez#readme"
+}
