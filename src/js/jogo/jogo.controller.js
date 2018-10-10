@@ -1,5 +1,5 @@
-import { TabuleiroController } from "../tabuleiro/tabuleiro.controller";
-import { PecaTabuleiro } from "../models/peca-tabuleiro";
+import { TabuleiroController } from '../tabuleiro/tabuleiro.controller';
+import { PecaTabuleiro } from '../models/peca-tabuleiro';
 
 export class JogoController {
   constructor() {
@@ -12,26 +12,34 @@ export class JogoController {
 
   gerarPecas() {
     const pecas = ['torre', 'cavalo', 'bispo', 'rainha', 'rei', 'bispo', 'cavalo', 'torre'];
+    const totalCasas = 8;
 
-    for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < 8; j++) {
-        const posicaoX = i < 2 ? i : i + 4;
+    for (let i = 0; i < totalCasas; i++) {
+      let pecasPorLinha = [];
+      for (let j = 0; j < totalCasas; j++) {
+        const posicaoX = i;
+        const posicaoY = j;
         const tipoPeca =  i < 2 ? 'peca-preta' : 'peca-branca';
-        if (i === 0 || i === 3) {
-          const peca = new PecaTabuleiro(posicaoX, j, pecas[j], tipoPeca);
-          this.pecas.push(peca);
-        } else if (i === 1 || i === 2) {
-          const peca = new PecaTabuleiro(posicaoX, j, 'peao', tipoPeca);
-          this.pecas.push(peca);
-        } 
+        let peca = null;
+        
+        if (i < 2 || i > 5) {
+          const nomePeca = i === 1 || i === 6 ? 'peao' : pecas[posicaoY];
+          peca = new PecaTabuleiro(posicaoX, posicaoY, nomePeca, tipoPeca);
+        }
+        pecasPorLinha = [...pecasPorLinha, peca];
       }
+      this.pecas = [...this.pecas, pecasPorLinha];
     }
   }
 
   posicionarPecas() {
-    this.pecas.forEach(pc => {
-      const className = `${pc.tipo}--${pc.peca}`
-      this.tabuleiro.posicionarPecas(pc.posicaoX, pc.posicaoY, className);
+    this.pecas.forEach(pcs => {
+      pcs.forEach(pc => {
+        if (!pc) return;
+        const {tipo, peca, posicaoX, posicaoY} = pc;
+        const className = `${tipo}--${peca}`;
+        this.tabuleiro.posicionarPecas(posicaoX, posicaoY, className);
+      });
     });
   }
 }
