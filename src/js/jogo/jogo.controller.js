@@ -44,7 +44,7 @@ export class JogoController {
     Object.keys(this._pecas).forEach(key => {
       if (this._pecas[key] === this._pecasDiff[key]) return;
 
-      if (this._pecas[key] !== this._pecasDiff[key]) {
+      if (this._pecasDiff[key]) {
         this.tabuleiroController.removerPeca(this._pecasDiff[key]);
       }
 
