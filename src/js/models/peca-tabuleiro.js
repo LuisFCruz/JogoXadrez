@@ -1,26 +1,18 @@
 export class PecaTabuleiro {
-  constructor(x, y, peca, tipo) {
+  constructor(x, y, peca, tipo, jogada = 0) {
     this._posicaoX = x;
     this._posicaoY = y;
     this._peca = peca;
     this._tipo = tipo;
-    this._jogada = 0;
+    this._jogada = jogada;
   }
 
   get posicaoX() {
     return this._posicaoX;
   }
 
-  set posicaoX(value) {
-    return this.posicaoX = value;
-  }
-
   get posicaoY() {
     return this._posicaoY
-  }
-
-  set posicaoY(value) {
-    return this.posicaoY = value;
   }
 
   get peca() {
@@ -35,7 +27,7 @@ export class PecaTabuleiro {
     return this._jogada;
   }
 
-  set jogada(value) {
-    this._jogada = value;
+  get nomePeca() {
+    return `${this.tipo}--${this.peca}`;
   }
 }

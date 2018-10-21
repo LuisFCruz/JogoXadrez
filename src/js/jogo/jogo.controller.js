@@ -3,11 +3,21 @@ import { PecaTabuleiro } from '../models/peca-tabuleiro';
 
 export class JogoController {
   constructor() {
-    this.pecas = [];
+    this._pecas = [];
+    this._pecaSelecionada;
+    this.tabuleiroController = new TabuleiroController();
+    this.inicializar();
+  }
+
+  peca(posicaoX, posicaoY) {
+    return this._pecas[posicaoX][posicaoY];
+  } 
+
+  inicializar() {
     this.gerarPecas();
-    this.tabuleiro = new TabuleiroController();
-    this.tabuleiro.criarTabuleiro();
+    this.tabuleiroController.criarTabuleiro();
     this.posicionarPecas();
+    this.selecionarPeca();
   }
 
   gerarPecas() {
@@ -28,18 +38,48 @@ export class JogoController {
         }
         pecasPorLinha = [...pecasPorLinha, peca];
       }
-      this.pecas = [...this.pecas, pecasPorLinha];
+      this._pecas = [...this._pecas, pecasPorLinha];
     }
   }
 
   posicionarPecas() {
-    this.pecas.forEach(pcs => {
-      pcs.forEach(pc => {
-        if (!pc) return;
-        const {tipo, peca, posicaoX, posicaoY} = pc;
-        const className = `${tipo}--${peca}`;
-        this.tabuleiro.posicionarPecas(posicaoX, posicaoY, className);
-      });
+    this._pecas.forEach(pcs => {
+      pcs.forEach(this.tabuleiroController.posicionarPeca);
     });
+  }
+
+  selecionarPeca() {
+    this.tabuleiroController.tabuleiro.addEventListener('click', ({ target }) => {
+      if (target.nodeName !== 'DIV') {
+        return;
+      }
+
+      const { posicaoX, posicaoY } = target.dataset;
+
+      if (this._pecaSelecionada) {
+        this.moverPeca(posicaoX, posicaoY);
+        return;
+      }
+
+      this._pecaSelecionada = this.peca(posicaoX, posicaoY);
+    });
+  }
+
+  moverPeca(posicaoXDestino, posicaoYDestino) {
+    if (!this._pecaSelecionada) {
+      return;
+    }
+    
+    const { posicaoX, posicaoY, peca, tipo, jogada} = this._pecaSelecionada;
+
+    const novaPeca = new PecaTabuleiro(posicaoXDestino, posicaoYDestino, peca, tipo, jogada + 1);
+
+    this.tabuleiroController.posicionarPeca(novaPeca)
+    this.tabuleiroController.removerPeca(this._pecaSelecionada);
+    
+    this._pecas[posicaoX][posicaoY] = null;
+    this._pecas[posicaoXDestino][posicaoYDestino] = novaPeca;
+
+    this._pecaSelecionada = null;
   }
 }
