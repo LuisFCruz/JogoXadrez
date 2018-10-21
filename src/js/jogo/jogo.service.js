@@ -1,26 +1,26 @@
 export class JogoService {
 
-  movimentoPeao(pecas, { posicaoX, posicaoY, peca, jogada, tipo}) {
+  movimentoPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
     posicaoX = parseInt(posicaoX);
     posicaoY = parseInt(posicaoY);
     let possibilidades = [];
-    const multiplicador = peca === 'preta' ? 1 : -1;
+    const multiplicador = tipo === 'peca-preta' ? 1 : -1;
 
     const novaPosicaoX = posicaoX + 1 * multiplicador;
 
-    if (pecas[novaPosicaoX, posicaoY + 1] && pecas[novaPosicaoX, posicaoY + 1].tipo !== tipo) {
+    if (pecas[`${novaPosicaoX}${posicaoY + 1}`] && pecas[`${novaPosicaoX}${posicaoY + 1}`].tipo !== tipo) {
       possibilidades = [...possibilidades, [novaPosicaoX, posicaoY + 1]];
     }
 
-    if (pecas[novaPosicaoX, posicaoY - 1] && pecas[novaPosicaoX, posicaoY - 1].tipo !== tipo) {
+    if (pecas[`${novaPosicaoX}${posicaoY - 1}`] && pecas[`${novaPosicaoX}${posicaoY - 1}`].tipo !== tipo) {
       possibilidades = [...possibilidades, [novaPosicaoX, posicaoY - 1]];
     }
 
-    if (!pecas[novaPosicaoX, posicaoY]) {
+    if (!pecas[`${novaPosicaoX}${posicaoY}`]) {
       possibilidades = [...possibilidades, [novaPosicaoX, posicaoY]];
     }
 
-    if (!jogada) {
+    if (!pecas[`${novaPosicaoX}${posicaoY}`] && !jogada) {
       possibilidades = [...possibilidades, [posicaoX + 2 * multiplicador, posicaoY]];
     }
 

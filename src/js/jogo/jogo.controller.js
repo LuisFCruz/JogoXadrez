@@ -7,6 +7,7 @@ export class JogoController {
     this._pecas = {};
     this._pecasDiff = {};
     this._pecaSelecionada = null;
+    this.vezDeJogar = 'peca-branca';
     this.tabuleiroController = new TabuleiroController();
     this.jogoService = new JogoService();
     this.inicializar();
@@ -65,13 +66,28 @@ export class JogoController {
       }
 
       const { posicaoX, posicaoY } = target.dataset;
+      const peca = this.peca(posicaoX, posicaoY);
 
-      if (this._pecaSelecionada) {
+      if (!this._pecaSelecionada && peca && this.vezDeJogar !== peca.tipo) {
+        return;
+      }
+
+      if (this._pecaSelecionada && (!peca || this.vezDeJogar !== peca.tipo )) {
         this.moverPeca(posicaoX, posicaoY);
         return;
       }
 
-      this._pecaSelecionada = this.peca(posicaoX, posicaoY);
+      this._pecaSelecionada = peca;
+
+      // const x = this.jogoService.movimentoPeao(this._pecas, peca);
+      // x.forEach(m => {
+      //   const a = document.querySelector(`#c${m[0]}${m[1]}`);
+      //   a.style.background = 'blue';
+
+      //   setTimeout(() => {
+      //     a.style.background = null;
+      //   }, 1000)
+      // })
     });
   }
 
@@ -91,6 +107,8 @@ export class JogoController {
       this.posicionarPecas();
 
       this._pecaSelecionada = null;
+
+      this.vezDeJogar = this.vezDeJogar === 'peca-branca' ? 'peca-preta' : 'peca-branca';
     }
   }
 
