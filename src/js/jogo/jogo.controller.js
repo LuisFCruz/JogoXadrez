@@ -3,14 +3,15 @@ import { PecaTabuleiro } from '../models/peca-tabuleiro';
 
 export class JogoController {
   constructor() {
-    this._pecas = [];
+    this._pecas = {};
+    this._pecasDiff = {};
     this._pecaSelecionada;
     this.tabuleiroController = new TabuleiroController();
     this.inicializar();
   }
 
   peca(posicaoX, posicaoY) {
-    return this._pecas[posicaoX][posicaoY];
+    return this._pecas[`${posicaoX}${posicaoY}`];
   } 
 
   inicializar() {
@@ -24,28 +25,35 @@ export class JogoController {
     const pecas = ['torre', 'cavalo', 'bispo', 'rainha', 'rei', 'bispo', 'cavalo', 'torre'];
     const totalCasas = 8;
 
-    for (let i = 0; i < totalCasas; i++) {
-      let pecasPorLinha = [];
-      for (let j = 0; j < totalCasas; j++) {
-        const posicaoX = i;
-        const posicaoY = j;
-        const tipoPeca =  i < 2 ? 'peca-preta' : 'peca-branca';
+    for (let posicaoX = 0; posicaoX < totalCasas; posicaoX++) {
+      for (let posicaoY = 0; posicaoY < totalCasas; posicaoY++) {
+        const tipoPeca =  posicaoX < 2 ? 'peca-preta' : 'peca-branca';
         let peca = null;
         
-        if (i < 2 || i > 5) {
-          const nomePeca = i === 1 || i === 6 ? 'peao' : pecas[posicaoY];
+        if (posicaoX < 2 || posicaoX > 5) {
+          const nomePeca = posicaoX === 1 || posicaoX === 6 ? 'peao' : pecas[posicaoY];
           peca = new PecaTabuleiro(posicaoX, posicaoY, nomePeca, tipoPeca);
         }
-        pecasPorLinha = [...pecasPorLinha, peca];
+        this._pecas[`${posicaoX}${posicaoY}`] = peca;
+        this._pecasDiff[`${posicaoX}${posicaoY}`] = null;
       }
-      this._pecas = [...this._pecas, pecasPorLinha];
     }
   }
 
   posicionarPecas() {
-    this._pecas.forEach(pcs => {
-      pcs.forEach(this.tabuleiroController.posicionarPeca);
+    Object.keys(this._pecas).forEach(key => {
+      if (this._pecas[key] === this._pecasDiff[key]) return;
+
+      if (this._pecas[key] !== this._pecasDiff[key]) {
+        this.tabuleiroController.removerPeca(this._pecasDiff[key]);
+      }
+
+      if (this._pecas[key]) {
+        this.tabuleiroController.posicionarPeca(this._pecas[key]);
+      }
+
     });
+    this._pecasDiff = { ...this._pecas };
   }
 
   selecionarPeca() {
@@ -74,11 +82,10 @@ export class JogoController {
 
     const novaPeca = new PecaTabuleiro(posicaoXDestino, posicaoYDestino, peca, tipo, jogada + 1);
 
-    this.tabuleiroController.posicionarPeca(novaPeca)
-    this.tabuleiroController.removerPeca(this._pecaSelecionada);
-    
-    this._pecas[posicaoX][posicaoY] = null;
-    this._pecas[posicaoXDestino][posicaoYDestino] = novaPeca;
+    this._pecas[`${posicaoX}${posicaoY}`] = null;
+    this._pecas[`${posicaoXDestino}${posicaoYDestino}`] = novaPeca;
+
+    this.posicionarPecas();
 
     this._pecaSelecionada = null;
   }
