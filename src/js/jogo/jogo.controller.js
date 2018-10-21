@@ -1,12 +1,14 @@
 import { TabuleiroController } from '../tabuleiro/tabuleiro.controller';
 import { PecaTabuleiro } from '../models/peca-tabuleiro';
+import { JogoService } from './jogo.service';
 
 export class JogoController {
   constructor() {
     this._pecas = {};
     this._pecasDiff = {};
-    this._pecaSelecionada;
+    this._pecaSelecionada = null;
     this.tabuleiroController = new TabuleiroController();
+    this.jogoService = new JogoService();
     this.inicializar();
   }
 
@@ -77,16 +79,32 @@ export class JogoController {
     if (!this._pecaSelecionada) {
       return;
     }
+
+    if (this.validarMovimento(this._pecaSelecionada, posicaoXDestino, posicaoYDestino)) {
+      const { posicaoX, posicaoY, peca, tipo, jogada} = this._pecaSelecionada;
+  
+      const novaPeca = new PecaTabuleiro(posicaoXDestino, posicaoYDestino, peca, tipo, jogada + 1);
+  
+      this._pecas[`${posicaoX}${posicaoY}`] = null;
+      this._pecas[`${posicaoXDestino}${posicaoYDestino}`] = novaPeca;
+  
+      this.posicionarPecas();
+
+      this._pecaSelecionada = null;
+    }
+  }
+
+  validarMovimento(pc, posicaoXDestino, posicaoYDestino) {
+    const posicao = [parseInt(posicaoXDestino), parseInt(posicaoYDestino)];
+    let movimentos = [];
+    switch(pc.peca) {
+      case 'peao':
+      movimentos = this.jogoService.movimentoPeao(this._pecas, pc);
+      break;
+    }
     
-    const { posicaoX, posicaoY, peca, tipo, jogada} = this._pecaSelecionada;
-
-    const novaPeca = new PecaTabuleiro(posicaoXDestino, posicaoYDestino, peca, tipo, jogada + 1);
-
-    this._pecas[`${posicaoX}${posicaoY}`] = null;
-    this._pecas[`${posicaoXDestino}${posicaoYDestino}`] = novaPeca;
-
-    this.posicionarPecas();
-
-    this._pecaSelecionada = null;
+    return !!movimentos.find(movimento => (
+      movimento[0] === posicao[0] && movimento[1] === posicao[1]
+    ));
   }
 }

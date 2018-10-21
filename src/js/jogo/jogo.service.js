@@ -1,25 +1,30 @@
 export class JogoService {
 
-  movimentoPeao(posicaoX, posicaoY, peca, ehPrimeroMovimento) {
+  movimentoPeao(pecas, { posicaoX, posicaoY, peca, jogada, tipo}) {
     posicaoX = parseInt(posicaoX);
     posicaoY = parseInt(posicaoY);
     let possibilidades = [];
     const multiplicador = peca === 'preta' ? 1 : -1;
 
-    possibilidades = [...possibilidades, [posicaoX + 1 * multiplicador, posicaoY + 1]];
-    possibilidades = [...possibilidades, [posicaoX + 1 * multiplicador, posicaoY - 1]];
+    const novaPosicaoX = posicaoX + 1 * multiplicador;
 
-    possibilidades = [...possibilidades, [posicaoX + 1 * multiplicador, posicaoY]];
+    if (pecas[novaPosicaoX, posicaoY + 1] && pecas[novaPosicaoX, posicaoY + 1].tipo !== tipo) {
+      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY + 1]];
+    }
 
-    if (ehPrimeroMovimento) {
+    if (pecas[novaPosicaoX, posicaoY - 1] && pecas[novaPosicaoX, posicaoY - 1].tipo !== tipo) {
+      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY - 1]];
+    }
+
+    if (!pecas[novaPosicaoX, posicaoY]) {
+      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY]];
+    }
+
+    if (!jogada) {
       possibilidades = [...possibilidades, [posicaoX + 2 * multiplicador, posicaoY]];
     }
 
-    possibilidades = this.validarPossibilidades(possibilidades);
-
-    possibilidades.map((p) => {
-      document.querySelector(`#c${p[0]}${p[1]}`).style.backgroundColor = 'red';
-    });
+    return this.validarPossibilidades(possibilidades);
   }
     
   movimentoCavalo(posicaoX, posicaoY) {
