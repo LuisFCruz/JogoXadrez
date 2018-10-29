@@ -27,7 +27,7 @@ export class JogoService {
     return this.validarPossibilidades(possibilidades);
   }
     
-  movimentoCavalo(posicaoX, posicaoY) {
+  movimentoCavalo({posicaoX, posicaoY}) {
     posicaoX = parseInt(posicaoX);
     posicaoY = parseInt(posicaoY);
 
@@ -41,6 +41,30 @@ export class JogoService {
     possibilidades = [...possibilidades, [posicaoX - 1, posicaoY + 2]];
     possibilidades = [...possibilidades, [posicaoX + 1, posicaoY - 2]];
     possibilidades = [...possibilidades, [posicaoX + 1, posicaoY + 2]];
+
+    return this.validarPossibilidades(possibilidades);
+  }
+
+  movimentoBispo({posicaoX, posicaoY}) {
+    let possibilidades = [];
+
+    for (let i = 1; i <= 8; i++) {
+      if (posicaoX - i >= 0 && posicaoY - i >= 0) {
+        possibilidades = [...possibilidades, [posicaoX - i, posicaoY - i]];
+      }
+      if (posicaoX - i >= 0 && posicaoY + i < 8) {
+        possibilidades = [...possibilidades, [posicaoX - i, posicaoY + i]];
+      }
+      if (posicaoX + i < 8 && posicaoY - i >= 0) {
+        possibilidades = [...possibilidades, [posicaoX + i, posicaoY - i]];
+      }
+      if (posicaoX + i < 8 && posicaoY + i < 8) {
+        possibilidades = [...possibilidades, [posicaoX + i, posicaoY + i]];
+      }
+    }
+
+    console.table(possibilidades);
+    console.log(possibilidades.length, this.validarPossibilidades(possibilidades).length);
 
     return this.validarPossibilidades(possibilidades);
   }
