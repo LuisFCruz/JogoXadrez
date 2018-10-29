@@ -119,6 +119,9 @@ export class JogoController {
       case 'peao':
       movimentos = this.jogoService.movimentoPeao(this._pecas, pc);
       break;
+      case 'cavalo':
+      movimentos = this.jogoService.movimentoCavalo(pc);
+      break;
     }
     
     return !!movimentos.find(movimento => (
