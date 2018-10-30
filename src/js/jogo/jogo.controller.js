@@ -79,7 +79,7 @@ export class JogoController {
 
       this._pecaSelecionada = peca;
 
-      // const x = this.jogoService.movimentoPeao(this._pecas, peca);
+      // const x = this.jogoService.movimentoTorre(this._pecas, peca);
       // x.forEach(m => {
       //   const a = document.querySelector(`#c${m[0]}${m[1]}`);
       //   a.style.background = 'blue';
@@ -121,6 +121,12 @@ export class JogoController {
       break;
       case 'cavalo':
       movimentos = this.jogoService.movimentoCavalo(pc);
+      break;
+      case 'bispo':
+      movimentos = this.jogoService.movimentoBispo(this._pecas, pc);
+      break;
+      case 'torre':
+      movimentos = this.jogoService.movimentoTorre(this._pecas, pc);
       break;
     }
     
