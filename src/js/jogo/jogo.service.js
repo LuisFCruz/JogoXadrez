@@ -1,8 +1,8 @@
 export class JogoService {
 
   movimentoPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
-    posicaoX = parseInt(posicaoX);
-    posicaoY = parseInt(posicaoY);
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
     let possibilidades = [];
     const multiplicador = tipo === 'peca-preta' ? 1 : -1;
 
@@ -28,8 +28,8 @@ export class JogoService {
   }
     
   movimentoCavalo({posicaoX, posicaoY}) {
-    posicaoX = parseInt(posicaoX);
-    posicaoY = parseInt(posicaoY);
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
 
     let possibilidades = [];
 
@@ -45,28 +45,69 @@ export class JogoService {
     return this.validarPossibilidades(possibilidades);
   }
 
-  movimentoBispo({posicaoX, posicaoY}) {
+  movimentoBispo(tabuleiro, {posicaoX, posicaoY, tipo}) {
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
+
     let possibilidades = [];
 
-    for (let i = 1; i <= 8; i++) {
-      if (posicaoX - i >= 0 && posicaoY - i >= 0) {
-        possibilidades = [...possibilidades, [posicaoX - i, posicaoY - i]];
-      }
-      if (posicaoX - i >= 0 && posicaoY + i < 8) {
-        possibilidades = [...possibilidades, [posicaoX - i, posicaoY + i]];
-      }
-      if (posicaoX + i < 8 && posicaoY - i >= 0) {
-        possibilidades = [...possibilidades, [posicaoX + i, posicaoY - i]];
-      }
-      if (posicaoX + i < 8 && posicaoY + i < 8) {
-        possibilidades = [...possibilidades, [posicaoX + i, posicaoY + i]];
-      }
+    for (let i = 1; (posicaoX - i >= 0 && posicaoY - i >= 0); i++) {
+      const proxX = posicaoX - i;
+      const proxY = posicaoY - i;
+      const peca = tabuleiro[`${proxX}${proxY}`];
+
+      if (peca && peca.tipo === tipo) { break; }
+
+      possibilidades = [...possibilidades, [proxX, proxY]];
+
+      if (peca && peca.tipo !== tipo) { break; }
     }
 
-    console.table(possibilidades);
-    console.log(possibilidades.length, this.validarPossibilidades(possibilidades).length);
+    for (let i = 1; (posicaoX - i >= 0 && posicaoY + i < 8); i++) {
+      const proxX = posicaoX - i;
+      const proxY = posicaoY + i;
+      const peca = tabuleiro[`${proxX}${proxY}`];
 
-    return this.validarPossibilidades(possibilidades);
+      if (peca && peca.tipo === tipo) { break; }
+
+      possibilidades = [...possibilidades, [proxX, proxY]];
+
+      if (peca && peca.tipo !== tipo) { break; }
+    }
+
+    for (let i = 1; (posicaoX + i < 8 && posicaoY - i >= 0); i++) {
+      const proxX = posicaoX + i;
+      const proxY = posicaoY - i;
+      const peca = tabuleiro[`${proxX}${proxY}`];
+
+      if (peca && peca.tipo === tipo) { break; }
+
+      possibilidades = [...possibilidades, [proxX, proxY]];
+
+      if (peca && peca.tipo !== tipo) { break; }
+    }
+
+    for (let i = 1; (posicaoX + i < 8 && posicaoY + i < 8); i++) {
+      const proxX = posicaoX + i;
+      const proxY = posicaoY + i;
+      const peca = tabuleiro[`${proxX}${proxY}`];
+
+      if (peca && peca.tipo === tipo) { break; }
+      
+      possibilidades = [...possibilidades, [proxX, proxY]];
+
+      if (peca && peca.tipo !== tipo) { break; }
+    }
+
+    return possibilidades;
+  }
+
+  movimentoTorre(tabuleiro, {posicaoX, posicaoY, tipo}){
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
+
+    let possibilidades = [];
+    return possibilidades;
   }
 
   validarPossibilidades(possibilidades) {
