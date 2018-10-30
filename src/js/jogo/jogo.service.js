@@ -107,7 +107,17 @@ export class JogoService {
     posicaoY = +posicaoY;
 
     let possibilidades = [];
-    return possibilidades;
+
+    for (let i = 1; i < 8; i++) {
+      possibilidades = [...possibilidades, [posicaoX, posicaoY + i]];
+      possibilidades = [...possibilidades, [posicaoX, posicaoY - i]];
+      possibilidades = [...possibilidades, [posicaoX + i, posicaoY]];
+      possibilidades = [...possibilidades, [posicaoX - i, posicaoY]];
+    }
+
+    console.table(this.validarPossibilidades(possibilidades));
+
+    return this.validarPossibilidades(possibilidades);
   }
 
   validarPossibilidades(possibilidades) {
