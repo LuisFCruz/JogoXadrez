@@ -1,126 +1,43 @@
+import { PecaTabuleiro } from '../models/peca-tabuleiro';
+
 export class JogoService {
-
-  movimentoPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
-    let possibilidades = [];
-    const multiplicador = tipo === 'peca-preta' ? 1 : -1;
-
-    const novaPosicaoX = posicaoX + 1 * multiplicador;
-
-    if (pecas[`${novaPosicaoX}${posicaoY + 1}`] && pecas[`${novaPosicaoX}${posicaoY + 1}`].tipo !== tipo) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY + 1]];
-    }
-
-    if (pecas[`${novaPosicaoX}${posicaoY - 1}`] && pecas[`${novaPosicaoX}${posicaoY - 1}`].tipo !== tipo) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY - 1]];
-    }
-
-    if (!pecas[`${novaPosicaoX}${posicaoY}`]) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY]];
-    }
-
-    if (!pecas[`${novaPosicaoX}${posicaoY}`] && !jogada) {
-      possibilidades = [...possibilidades, [posicaoX + 2 * multiplicador, posicaoY]];
-    }
-
-    return this.validarPossibilidades(possibilidades);
-  }
-    
-  movimentoCavalo({posicaoX, posicaoY}) {
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
-
-    let possibilidades = [];
-
-    possibilidades = [...possibilidades, [posicaoX - 2, posicaoY - 1]];
-    possibilidades = [...possibilidades, [posicaoX - 2, posicaoY + 1]];
-    possibilidades = [...possibilidades, [posicaoX + 2, posicaoY - 1]];
-    possibilidades = [...possibilidades, [posicaoX + 2, posicaoY + 1]];
-    possibilidades = [...possibilidades, [posicaoX - 1, posicaoY - 2]];
-    possibilidades = [...possibilidades, [posicaoX - 1, posicaoY + 2]];
-    possibilidades = [...possibilidades, [posicaoX + 1, posicaoY - 2]];
-    possibilidades = [...possibilidades, [posicaoX + 1, posicaoY + 2]];
-
-    return this.validarPossibilidades(possibilidades);
+  constructor() {
   }
 
-  movimentoBispo(tabuleiro, {posicaoX, posicaoY, tipo}) {
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
+  gerarPecas() {
+    const pecasTabuleiro = {};
+    const pecas = ['torre', 'cavalo', 'bispo', 'rainha', 'rei', 'bispo', 'cavalo', 'torre'];
+    const totalCasas = 8;
 
-    let possibilidades = [];
-
-    for (let i = 1; (posicaoX - i >= 0 && posicaoY - i >= 0); i++) {
-      const proxX = posicaoX - i;
-      const proxY = posicaoY - i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
+    for (let posicaoX = 0; posicaoX < totalCasas; posicaoX++) {
+      for (let posicaoY = 0; posicaoY < totalCasas; posicaoY++) {
+        const tipoPeca =  posicaoX < 2 ? 'peca-preta' : 'peca-branca';
+        let peca = null;
+        
+        if (posicaoX < 2 || posicaoX > 5) {
+          const nomePeca = posicaoX === 1 || posicaoX === 6 ? 'peao' : pecas[posicaoY];
+          peca = new PecaTabuleiro(posicaoX, posicaoY, nomePeca, tipoPeca);
+        }
+        pecasTabuleiro[`${posicaoX}${posicaoY}`] = peca;
+      }
     }
-
-    for (let i = 1; (posicaoX - i >= 0 && posicaoY + i < 8); i++) {
-      const proxX = posicaoX - i;
-      const proxY = posicaoY + i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    for (let i = 1; (posicaoX + i < 8 && posicaoY - i >= 0); i++) {
-      const proxX = posicaoX + i;
-      const proxY = posicaoY - i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    for (let i = 1; (posicaoX + i < 8 && posicaoY + i < 8); i++) {
-      const proxX = posicaoX + i;
-      const proxY = posicaoY + i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-      
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    return possibilidades;
+    return pecasTabuleiro;
   }
 
-  movimentoTorre(tabuleiro, {posicaoX, posicaoY, tipo}){
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
+  mostrarDicas(movimentos) {
+    movimentos.forEach(m => {
+      const a = document.querySelector(`#c${m[0]}${m[1]}`);
+      a.style.background = '#a8e0e2';
 
-    let possibilidades = [];
-
-    for (let i = 1; i < 8; i++) {
-      possibilidades = [...possibilidades, [posicaoX, posicaoY + i]];
-      possibilidades = [...possibilidades, [posicaoX, posicaoY - i]];
-      possibilidades = [...possibilidades, [posicaoX + i, posicaoY]];
-      possibilidades = [...possibilidades, [posicaoX - i, posicaoY]];
-    }
-
-    console.table(this.validarPossibilidades(possibilidades));
-
-    return this.validarPossibilidades(possibilidades);
+      setTimeout(() => {
+        a.style.background = null;
+      }, 2000);
+    });
   }
 
-  validarPossibilidades(possibilidades) {
-    return possibilidades.filter(p => !(p[0] < 0 || p[0] > 7) && !(p[1] < 0 || p[1] > 7));
+  validarMovimento(posicao, movimentosPossiveis) {
+    return !!movimentosPossiveis.find(movimento => (
+      movimento[0] === posicao[0] && movimento[1] === posicao[1]
+    ));
   }
 }

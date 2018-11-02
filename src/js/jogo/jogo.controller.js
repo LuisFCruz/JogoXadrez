@@ -1,6 +1,7 @@
 import { TabuleiroController } from '../tabuleiro/tabuleiro.controller';
-import { PecaTabuleiro } from '../models/peca-tabuleiro';
+import { PecaService } from '../pecas/pecas.service';
 import { JogoService } from './jogo.service';
+import { PecaTabuleiro } from '../models/peca-tabuleiro';
 
 export class JogoController {
   constructor() {
@@ -9,6 +10,7 @@ export class JogoController {
     this._pecaSelecionada = null;
     this.vezDeJogar = 'peca-branca';
     this.tabuleiroController = new TabuleiroController();
+    this.pecasService = new PecaService();
     this.jogoService = new JogoService();
     this.inicializar();
   }
@@ -18,30 +20,13 @@ export class JogoController {
   } 
 
   inicializar() {
-    this.gerarPecas();
+    this._pecas = this.jogoService.gerarPecas();
     this.tabuleiroController.criarTabuleiro();
     this.posicionarPecas();
     this.selecionarPeca();
   }
 
-  gerarPecas() {
-    const pecas = ['torre', 'cavalo', 'bispo', 'rainha', 'rei', 'bispo', 'cavalo', 'torre'];
-    const totalCasas = 8;
-
-    for (let posicaoX = 0; posicaoX < totalCasas; posicaoX++) {
-      for (let posicaoY = 0; posicaoY < totalCasas; posicaoY++) {
-        const tipoPeca =  posicaoX < 2 ? 'peca-preta' : 'peca-branca';
-        let peca = null;
-        
-        if (posicaoX < 2 || posicaoX > 5) {
-          const nomePeca = posicaoX === 1 || posicaoX === 6 ? 'peao' : pecas[posicaoY];
-          peca = new PecaTabuleiro(posicaoX, posicaoY, nomePeca, tipoPeca);
-        }
-        this._pecas[`${posicaoX}${posicaoY}`] = peca;
-        this._pecasDiff[`${posicaoX}${posicaoY}`] = null;
-      }
-    }
-  }
+  
 
   posicionarPecas() {
     Object.keys(this._pecas).forEach(key => {
@@ -67,27 +52,19 @@ export class JogoController {
 
       const { posicaoX, posicaoY } = target.dataset;
       const peca = this.peca(posicaoX, posicaoY);
-
+      
       if (!this._pecaSelecionada && peca && this.vezDeJogar !== peca.tipo) {
         return;
       }
 
       if (this._pecaSelecionada && (!peca || this.vezDeJogar !== peca.tipo )) {
-        this.moverPeca(posicaoX, posicaoY);
+        this.moverPeca(+posicaoX, +posicaoY);
         return;
       }
 
       this._pecaSelecionada = peca;
-
-      // const x = this.jogoService.movimentoTorre(this._pecas, peca);
-      // x.forEach(m => {
-      //   const a = document.querySelector(`#c${m[0]}${m[1]}`);
-      //   a.style.background = 'blue';
-
-      //   setTimeout(() => {
-      //     a.style.background = null;
-      //   }, 1000)
-      // })
+      const movimentos = this.obterMovimentos(this._pecaSelecionada);
+      this.jogoService.mostrarDicas(movimentos);
     });
   }
 
@@ -95,8 +72,10 @@ export class JogoController {
     if (!this._pecaSelecionada) {
       return;
     }
+    const posicao = [posicaoXDestino, posicaoYDestino];
+    const movimentos = this.obterMovimentos(this._pecaSelecionada);
 
-    if (this.validarMovimento(this._pecaSelecionada, posicaoXDestino, posicaoYDestino)) {
+    if (this.jogoService.validarMovimento(posicao, movimentos)) {
       const { posicaoX, posicaoY, peca, tipo, jogada} = this._pecaSelecionada;
   
       const novaPeca = new PecaTabuleiro(posicaoXDestino, posicaoYDestino, peca, tipo, jogada + 1);
@@ -112,26 +91,20 @@ export class JogoController {
     }
   }
 
-  validarMovimento(pc, posicaoXDestino, posicaoYDestino) {
-    const posicao = [parseInt(posicaoXDestino), parseInt(posicaoYDestino)];
-    let movimentos = [];
-    switch(pc.peca) {
+  obterMovimentos(pecaSelecionada) {
+    switch(pecaSelecionada.peca) {
       case 'peao':
-      movimentos = this.jogoService.movimentoPeao(this._pecas, pc);
-      break;
+      return this.pecasService.movimentoPeao(this._pecas, pecaSelecionada);
       case 'cavalo':
-      movimentos = this.jogoService.movimentoCavalo(pc);
-      break;
+      return this.pecasService.movimentoCavalo(this._pecas, pecaSelecionada);
       case 'bispo':
-      movimentos = this.jogoService.movimentoBispo(this._pecas, pc);
-      break;
+      return this.pecasService.movimentoBispo(this._pecas, pecaSelecionada);
       case 'torre':
-      movimentos = this.jogoService.movimentoTorre(this._pecas, pc);
-      break;
+      return this.pecasService.movimentoTorre(this._pecas, pecaSelecionada);
+      case 'rainha':
+      return this.pecasService.movimentosRainha(this._pecas, pecaSelecionada);
+      default:
+      return [];
     }
-    
-    return !!movimentos.find(movimento => (
-      movimento[0] === posicao[0] && movimento[1] === posicao[1]
-    ));
   }
 }
