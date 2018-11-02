@@ -4,9 +4,9 @@ export class PecaService {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
     let possibilidades = [];
-    const multiplicador = tipo === 'peca-preta' ? 1 : -1;
+    const multiYplicador = tipo === 'peca-preta' ? 1 : -1;
 
-    const novaPosicaoX = posicaoX + 1 * multiplicador;
+    const novaPosicaoX = posicaoX + 1 * multiYplicador;
 
     if (pecas[`${novaPosicaoX}${posicaoY + 1}`] && pecas[`${novaPosicaoX}${posicaoY + 1}`].tipo !== tipo) {
       possibilidades = [...possibilidades, [novaPosicaoX, posicaoY + 1]];
@@ -21,7 +21,7 @@ export class PecaService {
     }
 
     if (!pecas[`${novaPosicaoX}${posicaoY}`] && !jogada) {
-      possibilidades = [...possibilidades, [posicaoX + 2 * multiplicador, posicaoY]];
+      possibilidades = [...possibilidades, [posicaoX + 2 * multiYplicador, posicaoY]];
     }
 
     return this.validarPossibilidades(possibilidades);
@@ -167,6 +167,27 @@ export class PecaService {
     return possibilidades;
   }
 
+  movimentosRei(tabuleiro, {posicaoX, posicaoY, tipo}) {
+    let possibilidades = [];
+
+    for (let i = 1; i <= 8; i++) {
+      const multiX = i < 5 ? 1 : -1;
+      const multiY = i < 5 ? (i % 2 ? -1 : 1) : (i % 2 ? 1 : -1);
+
+      const proxX = i % 4 ? posicaoX - 1 * multiX : posicaoX;
+      const proxY = (i -1) % 4 ? posicaoY - 1 * multiY : posicaoY;
+      
+
+      if (this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) {
+        possibilidades = [...possibilidades, [proxX, proxY]];
+      }
+    }
+
+    console.table(this.validarPossibilidades(possibilidades));
+
+    return this.validarPossibilidades(possibilidades);
+  }
+
   validarPossibilidades(possibilidades) {
     return possibilidades.filter(p => 
       this.validarPossibilidade(p[0]) && this.validarPossibilidade(p[1])
@@ -174,6 +195,6 @@ export class PecaService {
   }
 
   validarPossibilidade(possibilidade) {
-    return !(possibilidade[0] < 0 || possibilidade[0] > 7);
+    return !(possibilidade < 0 || possibilidade > 7);
   }
 }

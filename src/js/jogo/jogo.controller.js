@@ -103,6 +103,8 @@ export class JogoController {
       return this.pecasService.movimentoTorre(this._pecas, pecaSelecionada);
       case 'rainha':
       return this.pecasService.movimentosRainha(this._pecas, pecaSelecionada);
+      case 'rei':
+      return this.pecasService.movimentosRei(this._pecas, pecaSelecionada);
       default:
       return [];
     }
