@@ -27,21 +27,28 @@ export class PecaService {
     return this.validarPossibilidades(possibilidades);
   }
     
-  movimentoCavalo(tabuleiro, {posicaoX, posicaoY}) {
+  movimentoCavalo(tabuleiro, {posicaoX, posicaoY, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
     let possibilidades = [];
 
-    possibilidades = [...possibilidades, [posicaoX - 2, posicaoY - 1]];
-    possibilidades = [...possibilidades, [posicaoX - 2, posicaoY + 1]];
-    possibilidades = [...possibilidades, [posicaoX + 2, posicaoY - 1]];
-    possibilidades = [...possibilidades, [posicaoX + 2, posicaoY + 1]];
-    possibilidades = [...possibilidades, [posicaoX - 1, posicaoY - 2]];
-    possibilidades = [...possibilidades, [posicaoX - 1, posicaoY + 2]];
-    possibilidades = [...possibilidades, [posicaoX + 1, posicaoY - 2]];
-    possibilidades = [...possibilidades, [posicaoX + 1, posicaoY + 2]];
+    for(let i = 0; i < 8; i++) {
+      const operadorX = i < 4 ? (i < 2 ? -2 : 2) : (i < 6 ? -1 : 1);
+      const operadorY = i < 4 ? (i % 2 ? -1 : 1) : (i % 2 ? -2 : 2);
+      const proxX = posicaoX + operadorX;
+      const proxY = posicaoY + operadorY;
+      const peca = tabuleiro[`${proxX}${proxY}`] || {}
 
+      if (
+        this.validarPossibilidade(proxX) && 
+        this.validarPossibilidade(proxY) &&
+        peca.tipo !== tipo
+        ) {
+        possibilidades = [...possibilidades, [proxX, proxY]];
+      }
+    }
+    
     return this.validarPossibilidades(possibilidades);
   }
 
