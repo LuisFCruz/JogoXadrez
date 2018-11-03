@@ -5,10 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+
+  <style>
+    .row {
+      width: 562px;
+      display: flex;
+    }
+    
+    .col {
+      height: 562px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .row span {
+      flex: 1;
+      text-align: center;
+    }
+
+    .col span {
+      flex: 1;
+      line-height: 60px;
+      padding-right: 5px;
+    }
+  </style>
 </head>
 
 <body>
-  <main class="tabuleiro"></main>
+  <section>
+    <div class="row">
+      <span>0</span>
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+      <span>6</span>
+      <span>7</span>
+    </div>
+    <div style="display: flex;">
+      <div class="col">
+        <span>0</span>  
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+        <span>6</span>
+        <span>7</span>
+        </div>
+      <main class="tabuleiro"></main>
+    </div>
+  </section>
 </body>
 
 </html>

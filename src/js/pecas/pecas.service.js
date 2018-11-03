@@ -176,16 +176,18 @@ export class PecaService {
 
       const proxX = i % 4 ? posicaoX - 1 * multiX : posicaoX;
       const proxY = (i -1) % 4 ? posicaoY - 1 * multiY : posicaoY;
-      
+      const peca = tabuleiro[`${proxX}${proxY}`] || {};
 
-      if (this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) {
+      if (
+        this.validarPossibilidade(proxX) && 
+        this.validarPossibilidade(proxY) &&
+        peca.tipo !== tipo
+        ) {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
     }
 
-    console.table(this.validarPossibilidades(possibilidades));
-
-    return this.validarPossibilidades(possibilidades);
+    return possibilidades;
   }
 
   validarPossibilidades(possibilidades) {
