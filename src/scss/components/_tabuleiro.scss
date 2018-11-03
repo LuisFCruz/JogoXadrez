@@ -10,18 +10,27 @@
   grid-gap: 0;
  
   .casa {
+
     &-preta {
       background-color: #999; 
+      border: 1px solid #999;
     }
 
     &-branca {
       background-color: #fff; 
+      border: 1px solid #fff;
     }
 
     &-preta,
     &-branca {
       font-size: 48px;
       text-align: center;
+    }
+
+    &-dica,
+    &-selecionada {
+      background-color: #3d9493; 
+      border: 1px solid #fff;
     }
   }
 

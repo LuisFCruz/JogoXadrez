@@ -24,17 +24,6 @@ export class JogoService {
     return pecasTabuleiro;
   }
 
-  mostrarDicas(movimentos) {
-    movimentos.forEach(m => {
-      const a = document.querySelector(`#c${m[0]}${m[1]}`);
-      a.style.background = '#a8e0e2';
-
-      setTimeout(() => {
-        a.style.background = null;
-      }, 2000);
-    });
-  }
-
   validarMovimento(posicao, movimentosPossiveis) {
     return !!movimentosPossiveis.find(movimento => (
       movimento[0] === posicao[0] && movimento[1] === posicao[1]

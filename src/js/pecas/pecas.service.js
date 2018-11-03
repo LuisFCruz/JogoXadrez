@@ -1,6 +1,25 @@
 export class PecaService {
 
-  movimentoPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
+  obterMovimentos(tabuleiro, pecaSelecionada) {
+    switch(pecaSelecionada.peca) {
+      case 'peao':
+      return this.movimentosPeao(tabuleiro, pecaSelecionada);
+      case 'cavalo':
+      return this.movimentosCavalo(tabuleiro, pecaSelecionada);
+      case 'bispo':
+      return this.movimentosBispo(tabuleiro, pecaSelecionada);
+      case 'torre':
+      return this.movimentosTorre(tabuleiro, pecaSelecionada);
+      case 'rainha':
+      return this.movimentosRainha(tabuleiro, pecaSelecionada);
+      case 'rei':
+      return this.movimentosRei(tabuleiro, pecaSelecionada);
+      default:
+      return [];
+    }
+  }
+
+  movimentosPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
     let possibilidades = [];
@@ -27,7 +46,7 @@ export class PecaService {
     return this.validarPossibilidades(possibilidades);
   }
     
-  movimentoCavalo(tabuleiro, {posicaoX, posicaoY, tipo}) {
+  movimentosCavalo(tabuleiro, {posicaoX, posicaoY, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
@@ -44,15 +63,15 @@ export class PecaService {
         this.validarPossibilidade(proxX) && 
         this.validarPossibilidade(proxY) &&
         peca.tipo !== tipo
-        ) {
+      ) {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
     }
-    
-    return this.validarPossibilidades(possibilidades);
+
+    return possibilidades;
   }
 
-  movimentoBispo(tabuleiro, {posicaoX, posicaoY, tipo}) {
+  movimentosBispo(tabuleiro, {posicaoX, posicaoY, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
@@ -109,7 +128,7 @@ export class PecaService {
     return possibilidades;
   }
 
-  movimentoTorre(tabuleiro, {posicaoX, posicaoY, tipo}){
+  movimentosTorre(tabuleiro, {posicaoX, posicaoY, tipo}){
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
@@ -167,8 +186,8 @@ export class PecaService {
   }
 
   movimentosRainha(tabuleiro, peca) {
-    const movimentosBispo = this.movimentoBispo(tabuleiro, peca);
-    const movimentosTorre = this.movimentoTorre(tabuleiro, peca);
+    const movimentosBispo = this.movimentosBispo(tabuleiro, peca);
+    const movimentosTorre = this.movimentosTorre(tabuleiro, peca);
     const possibilidades = [...movimentosBispo, ...movimentosTorre];
 
     return possibilidades;
@@ -189,7 +208,7 @@ export class PecaService {
         this.validarPossibilidade(proxX) && 
         this.validarPossibilidade(proxY) &&
         peca.tipo !== tipo
-        ) {
+      ) {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
     }

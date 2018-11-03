@@ -50,6 +50,8 @@ export class JogoController {
         return;
       }
 
+      this.tabuleiroController.removerDicas();
+
       const { posicaoX, posicaoY } = target.dataset;
       const peca = this.peca(posicaoX, posicaoY);
       
@@ -64,8 +66,8 @@ export class JogoController {
 
       this._pecaSelecionada = peca;
       if (this._pecaSelecionada) {
-        const movimentos = this.obterMovimentos(this._pecaSelecionada);
-        this.jogoService.mostrarDicas(movimentos);
+        const movimentos = this.pecasService.obterMovimentos(this._pecas, this._pecaSelecionada);
+        this.tabuleiroController.mostrarDicas(peca, movimentos);
       }
     });
   }
@@ -75,7 +77,7 @@ export class JogoController {
       return;
     }
     const posicao = [posicaoXDestino, posicaoYDestino];
-    const movimentos = this.obterMovimentos(this._pecaSelecionada);
+    const movimentos = this.pecasService.obterMovimentos(this._pecas, this._pecaSelecionada);
 
     if (this.jogoService.validarMovimento(posicao, movimentos)) {
       const { posicaoX, posicaoY, peca, tipo, jogada} = this._pecaSelecionada;
@@ -90,25 +92,6 @@ export class JogoController {
       this._pecaSelecionada = null;
 
       this.vezDeJogar = this.vezDeJogar === 'peca-branca' ? 'peca-preta' : 'peca-branca';
-    }
-  }
-
-  obterMovimentos(pecaSelecionada) {
-    switch(pecaSelecionada.peca) {
-      case 'peao':
-      return this.pecasService.movimentoPeao(this._pecas, pecaSelecionada);
-      case 'cavalo':
-      return this.pecasService.movimentoCavalo(this._pecas, pecaSelecionada);
-      case 'bispo':
-      return this.pecasService.movimentoBispo(this._pecas, pecaSelecionada);
-      case 'torre':
-      return this.pecasService.movimentoTorre(this._pecas, pecaSelecionada);
-      case 'rainha':
-      return this.pecasService.movimentosRainha(this._pecas, pecaSelecionada);
-      case 'rei':
-      return this.pecasService.movimentosRei(this._pecas, pecaSelecionada);
-      default:
-      return [];
     }
   }
 }

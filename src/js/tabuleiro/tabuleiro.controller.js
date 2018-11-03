@@ -31,4 +31,30 @@ export class TabuleiroController {
     const casa = document.querySelector(`#c${posicaoX}${posicaoY}`);
     casa.classList.remove(className);
   }
+
+  mostrarDicas({posicaoX, posicaoY}, movimentos) {
+
+    const casaSelecionada = this.tabuleiro.querySelector(`#c${posicaoX}${posicaoY}`);
+    casaSelecionada.classList.add("casa-selecionada");
+
+    movimentos.forEach(m => {
+      const casa = this.tabuleiro.querySelector(`#c${m[0]}${m[1]}`);
+      
+      casa.classList.add("casa-dica");
+    });
+  }
+
+  removerDicas() {
+    const casaSelecionada = this.tabuleiro.querySelector(`.casa-selecionada`);
+
+    if (casaSelecionada) {
+      casaSelecionada.classList.remove("casa-selecionada");
+    }
+
+    const casas = this.tabuleiro.querySelectorAll(`.casa-dica`);
+
+    if (!casas) { return; }
+    casas.forEach(({classList}) => classList.remove("casa-dica"));
+      
+  }
 }
