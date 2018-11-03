@@ -63,8 +63,10 @@ export class JogoController {
       }
 
       this._pecaSelecionada = peca;
-      const movimentos = this.obterMovimentos(this._pecaSelecionada);
-      this.jogoService.mostrarDicas(movimentos);
+      if (this._pecaSelecionada) {
+        const movimentos = this.obterMovimentos(this._pecaSelecionada);
+        this.jogoService.mostrarDicas(movimentos);
+      }
     });
   }
 
