@@ -77,52 +77,27 @@ export class PecaService {
 
     let possibilidades = [];
 
-    for (let i = 1; (posicaoX - i >= 0 && posicaoY - i >= 0); i++) {
-      const proxX = posicaoX - i;
-      const proxY = posicaoY - i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
+    for (let i = 0; i < 4; i++) {
+      const multiX = i < 2 ? 1 : -1;
+      const multiY = i % 2 ? 1 : -1;
 
-      if (peca && peca.tipo === tipo) { break; }
+      for(let m = 1; m <= 8; m++) {
+        
+        const proxX = posicaoX - m * multiX;
+        const proxY = posicaoY - m * multiY;
+        const peca = tabuleiro[`${proxX}${proxY}`];
+        
+        if (
+          !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
+          (peca && peca.tipo === tipo)
+        ) {
+          break;
+        }
 
-      possibilidades = [...possibilidades, [proxX, proxY]];
+        possibilidades = [...possibilidades, [proxX, proxY]];
 
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    for (let i = 1; (posicaoX - i >= 0 && posicaoY + i < 8); i++) {
-      const proxX = posicaoX - i;
-      const proxY = posicaoY + i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    for (let i = 1; (posicaoX + i < 8 && posicaoY - i >= 0); i++) {
-      const proxX = posicaoX + i;
-      const proxY = posicaoY - i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
-    }
-
-    for (let i = 1; (posicaoX + i < 8 && posicaoY + i < 8); i++) {
-      const proxX = posicaoX + i;
-      const proxY = posicaoY + i;
-      const peca = tabuleiro[`${proxX}${proxY}`];
-
-      if (peca && peca.tipo === tipo) { break; }
-      
-      possibilidades = [...possibilidades, [proxX, proxY]];
-
-      if (peca && peca.tipo !== tipo) { break; }
+        if (peca && peca.tipo !== tipo) { break; }
+      }
     }
 
     return possibilidades;
