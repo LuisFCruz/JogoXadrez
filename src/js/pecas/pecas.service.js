@@ -19,31 +19,35 @@ export class PecaService {
     }
   }
 
-  movimentosPeao(pecas, { posicaoX, posicaoY, jogada, tipo}) {
+  movimentosPeao(tabuleiro, { posicaoX, posicaoY, jogada, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
     let possibilidades = [];
-    const multiYplicador = tipo === 'peca-preta' ? 1 : -1;
+    const multiX = tipo === 'peca-preta' ? 1 : -1;
 
-    const novaPosicaoX = posicaoX + 1 * multiYplicador;
+    const proxX = posicaoX + 1 * multiX;
 
-    if (pecas[`${novaPosicaoX}${posicaoY + 1}`] && pecas[`${novaPosicaoX}${posicaoY + 1}`].tipo !== tipo) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY + 1]];
+    for (let i = 0; i < 2; i++) {
+      const multiY = i % 2 ? 1 : -1;
+      const proxY = posicaoY + 1 * multiY;
+      const peca = tabuleiro[`${proxX}${proxY}`];
+
+      if (peca && peca.tipo !== tipo) {
+        possibilidades = [...possibilidades, [proxX, proxY]];
+      }
     }
 
-    if (pecas[`${novaPosicaoX}${posicaoY - 1}`] && pecas[`${novaPosicaoX}${posicaoY - 1}`].tipo !== tipo) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY - 1]];
+    if (!tabuleiro[`${proxX}${posicaoY}`]) {
+      possibilidades = [...possibilidades, [proxX, posicaoY]];
     }
 
-    if (!pecas[`${novaPosicaoX}${posicaoY}`]) {
-      possibilidades = [...possibilidades, [novaPosicaoX, posicaoY]];
+    const proxXInicial = posicaoX + 2 * multiX
+
+    if (!jogada && !tabuleiro[`${proxX}${posicaoY}`] && !tabuleiro[`${proxXInicial}${posicaoY}`]) {
+      possibilidades = [...possibilidades, [proxXInicial, posicaoY]];
     }
 
-    if (!pecas[`${novaPosicaoX}${posicaoY}`] && !jogada) {
-      possibilidades = [...possibilidades, [posicaoX + 2 * multiYplicador, posicaoY]];
-    }
-
-    return this.validarPossibilidades(possibilidades);
+    return this._validarPossibilidades(possibilidades);
   }
     
   movimentosCavalo(tabuleiro, {posicaoX, posicaoY, tipo}) {
@@ -71,75 +75,43 @@ export class PecaService {
     return possibilidades;
   }
 
-  movimentosBispo(tabuleiro, {posicaoX, posicaoY, tipo}) {
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
+  movimentosBispo(tabuleiro, peca) {
+    const movimentos = this._movimentosDiagonais(tabuleiro, peca);
 
     let possibilidades = [];
-
-    for (let i = 0; i < 4; i++) {
-      const multiX = i < 2 ? 1 : -1;
-      const multiY = i % 2 ? 1 : -1;
-
-      for(let m = 1; m <= 8; m++) {
-        
-        const proxX = posicaoX - m * multiX;
-        const proxY = posicaoY - m * multiY;
-        const peca = tabuleiro[`${proxX}${proxY}`];
-        
-        if (
-          !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
-          (peca && peca.tipo === tipo)
-        ) {
-          break;
-        }
-
-        possibilidades = [...possibilidades, [proxX, proxY]];
-
-        if (peca && peca.tipo !== tipo) { break; }
-      }
+    
+    for (const movimento of movimentos) {
+      possibilidades = [...possibilidades, ...movimento]
     }
 
     return possibilidades;
   }
 
-  movimentosTorre(tabuleiro, {posicaoX, posicaoY, tipo}){
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
+  movimentosTorre(tabuleiro, peca){
+    const movimentos = this._movimentosPerpendiculares(tabuleiro, peca);
 
     let possibilidades = [];
-
-    for (let i = 0; i < 4; i++) {
-      const multiplicador = i % 2 ? -1 : 1;
-      const multiX = i < 2 ? 0 : multiplicador;
-      const multiY = i < 2 ? multiplicador : 0;
-
-      for(let m = 1; m <= 8; m++) {
-        
-        const proxX = posicaoX - m * multiX;
-        const proxY = posicaoY - m * multiY;
-        const peca = tabuleiro[`${proxX}${proxY}`];
-
-        if (
-          !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
-          (peca && peca.tipo === tipo)
-        ) {
-          break;
-        }
-
-        possibilidades = [...possibilidades, [proxX, proxY]];
-
-        if (peca && peca.tipo !== tipo) { break; }
-      }
+    
+    for (const movimento of movimentos) {
+      possibilidades = [...possibilidades, ...movimento]
     }
 
-    return this.validarPossibilidades(possibilidades);
+    return possibilidades;
   }
 
   movimentosRainha(tabuleiro, peca) {
-    const movimentosBispo = this.movimentosBispo(tabuleiro, peca);
-    const movimentosTorre = this.movimentosTorre(tabuleiro, peca);
-    const possibilidades = [...movimentosBispo, ...movimentosTorre];
+    const movimentosDiagonais = this._movimentosDiagonais(tabuleiro, peca);
+    const movimentosPerpendiculares = this._movimentosPerpendiculares(tabuleiro, peca);
+
+    let possibilidades = [];
+
+    for (const movimento of movimentosDiagonais) {
+      possibilidades = [...possibilidades, ...movimento]
+    }
+
+    for (const movimento of movimentosPerpendiculares) {
+      possibilidades = [...possibilidades, ...movimento]
+    }
 
     return possibilidades;
   }
@@ -167,7 +139,7 @@ export class PecaService {
     return possibilidades;
   }
 
-  validarPossibilidades(possibilidades) {
+  _validarPossibilidades(possibilidades) {
     return possibilidades.filter(p => 
       this.validarPossibilidade(p[0]) && this.validarPossibilidade(p[1])
     );
@@ -175,5 +147,70 @@ export class PecaService {
 
   validarPossibilidade(possibilidade) {
     return !(possibilidade < 0 || possibilidade > 7);
+  }
+
+  *_movimentosDiagonais(tabuleiro, {posicaoX, posicaoY, tipo}){
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
+
+    let possibilidades = [];
+
+    for (let i = 0; i < 4; i++) {
+      const multiX = i < 2 ? 1 : -1;
+      const multiY = i % 2 ? 1 : -1;
+
+      for(let m = 1; m <= 8; m++) {
+        
+        const proxX = posicaoX - m * multiX;
+        const proxY = posicaoY - m * multiY;
+        const peca = tabuleiro[`${proxX}${proxY}`];
+        
+        if (
+          !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
+          (peca && peca.tipo === tipo)
+        ) {
+          break;
+        }
+
+        possibilidades = [...possibilidades, [proxX, proxY]];
+
+        if (peca && peca.tipo !== tipo) { break; }
+      }
+
+      yield possibilidades;
+    }
+  }
+
+  *_movimentosPerpendiculares(tabuleiro, {posicaoX, posicaoY, tipo}){
+    posicaoX = +posicaoX;
+    posicaoY = +posicaoY;
+
+    let possibilidades = [];
+
+    for (let i = 0; i < 4; i++) {
+      const multiplicador = i % 2 ? -1 : 1;
+      const multiX = i < 2 ? 0 : multiplicador;
+      const multiY = i < 2 ? multiplicador : 0;
+
+      for(let m = 1; m <= 8; m++) {
+        
+        const proxX = posicaoX - m * multiX;
+        const proxY = posicaoY - m * multiY;
+        const peca = tabuleiro[`${proxX}${proxY}`];
+
+        if (
+          !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
+          (peca && peca.tipo === tipo)
+        ) {
+          break;
+        }
+
+        possibilidades = [...possibilidades, [proxX, proxY]];
+
+        if (peca && peca.tipo !== tipo) { break; }
+      }
+
+      yield possibilidades;
+    }
   }
 }
