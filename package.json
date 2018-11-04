@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Aprendendo a fazer um jogo de xadrez com javascript, html e css",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "@babel/runtime": "^7.1.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "@webpack-cli/init": "^0.1.2",
     "babel-loader": "^8.0.4",
