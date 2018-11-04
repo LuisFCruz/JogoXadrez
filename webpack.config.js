@@ -10,28 +10,21 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
-    // compress: true
   },
   module: {
     rules: [{
-        test: /\.scss$/,
-        use: [
-            "style-loader",
-            "css-loader",
-            "sass-loader",
-        ]
+      test: /\.scss$/,
+      use: [
+        "style-loader",
+        "css-loader",
+        "sass-loader",
+      ]
     },
     {
       test: /\.js$/,
       exclude: /node_modules/,
       use: {
-        loader: 'babel-loader',
-        // options: {
-        //   presets: ['@babel/preset-env'],
-        //   // plugins: [
-        //   //   "@babel/plugin-transform-strict-mode"
-        //   // ]
-        // }
+        loader: 'babel-loader'
       },
     }]
   },
