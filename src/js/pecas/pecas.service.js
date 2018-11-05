@@ -1,3 +1,5 @@
+import { PecaTabuleiro } from "../models/peca-tabuleiro";
+
 export class PecaService {
 
   obterMovimentos(tabuleiro, pecaSelecionada) {
@@ -20,28 +22,28 @@ export class PecaService {
   }
 
   estaEmCheque(tabuleiro, peca) {
-
+    return this._estaEmChequeDiagonal(tabuleiro, peca) ||
+      this._estaEmChequePerpendicular(tabuleiro, peca) ||
+      this._estaEmChequeL(tabuleiro, peca) ||
+      this._estaEmChequeRotacao(tabuleiro, peca) ||
+      this._estaEmChequeDiagonalSimples(tabuleiro, peca);
   }
 
-  movimentosPeao(tabuleiro, { posicaoX, posicaoY, jogada, tipo}) {
-    posicaoX = +posicaoX;
-    posicaoY = +posicaoY;
-    let possibilidades = [];
+  movimentosPeao(tabuleiro, peca) {
+    const { posicaoX, posicaoY, jogada, tipo} = peca;
     const multiX = tipo === 'peca-preta' ? 1 : -1;
-
     const proxX = posicaoX + 1 * multiX;
+    const captura = this._movimentoDiagonalSimples(tabuleiro, peca);
+    
+    let possibilidades = [...captura];
 
-    for (let i = 0; i < 2; i++) {
-      const multiY = i % 2 ? 1 : -1;
-      const proxY = posicaoY + 1 * multiY;
-      const peca = tabuleiro[`${proxX}${proxY}`];
+    const casa = tabuleiro[`${proxX}${posicaoY}`];
 
-      if (peca && peca.tipo !== tipo && peca.peca !== 'rei') {
-        possibilidades = [...possibilidades, [proxX, proxY]];
-      }
-    }
-
-    if (!tabuleiro[`${proxX}${posicaoY}`]) {
+    if (
+      this.validarPossibilidade(proxX) && 
+      this.validarPossibilidade(posicaoY) &&
+      !casa
+    ) {
       possibilidades = [...possibilidades, [proxX, posicaoY]];
     }
 
@@ -51,7 +53,7 @@ export class PecaService {
       possibilidades = [...possibilidades, [proxXInicial, posicaoY]];
     }
 
-    return this._validarPossibilidades(possibilidades);
+    return possibilidades;
   }
     
   movimentosCavalo(tabuleiro, {posicaoX, posicaoY, tipo}) {
@@ -81,81 +83,44 @@ export class PecaService {
   }
 
   movimentosBispo(tabuleiro, peca) {
-    const movimentos = this._movimentosDiagonais(tabuleiro, peca);
-
-    let possibilidades = [];
-    
-    for (const movimento of movimentos) {
-      possibilidades = [...possibilidades, ...movimento]
-    }
-
-    return possibilidades;
+    return this._movimentosDiagonais(tabuleiro, peca);
   }
 
   movimentosTorre(tabuleiro, peca){
-    const movimentos = this._movimentosPerpendiculares(tabuleiro, peca);
-
-    let possibilidades = [];
-    
-    for (const movimento of movimentos) {
-      possibilidades = [...possibilidades, ...movimento]
-    }
-
-    return possibilidades;
+   return this._movimentosPerpendiculares(tabuleiro, peca);
   }
 
   movimentosRainha(tabuleiro, peca) {
     const movimentosDiagonais = this._movimentosDiagonais(tabuleiro, peca);
     const movimentosPerpendiculares = this._movimentosPerpendiculares(tabuleiro, peca);
 
-    let possibilidades = [];
-
-    for (const movimento of movimentosDiagonais) {
-      possibilidades = [...possibilidades, ...movimento]
-    }
-
-    for (const movimento of movimentosPerpendiculares) {
-      possibilidades = [...possibilidades, ...movimento]
-    }
+    const possibilidades = [...movimentosDiagonais, ...movimentosPerpendiculares];
 
     return possibilidades;
   }
 
-  movimentosRei(tabuleiro, {posicaoX, posicaoY, tipo}) {
+  movimentosRei(tabuleiro, peca) {
+    const movimentos = this._movimentosRotacao(tabuleiro, peca);
     let possibilidades = [];
 
-    for (let i = 1; i <= 8; i++) {
-      const multiX = i < 5 ? 1 : -1;
-      const multiY = i < 5 ? (i % 2 ? -1 : 1) : (i % 2 ? 1 : -1);
+    movimentos.forEach((m) => {
+      const [posicaoX, posicaoY] = m;
+      const novaPeca = new PecaTabuleiro(posicaoX, posicaoY, peca.peca, peca.tipo);
+      const cheque = !this.estaEmCheque(tabuleiro, novaPeca);
 
-      const proxX = i % 4 ? posicaoX - 1 * multiX : posicaoX;
-      const proxY = (i -1) % 4 ? posicaoY - 1 * multiY : posicaoY;
-      const peca = tabuleiro[`${proxX}${proxY}`] || {};
-
-      if (
-        this.validarPossibilidade(proxX) && 
-        this.validarPossibilidade(proxY) &&
-        peca.tipo !== tipo &&
-        peca.peca !== 'rei'
-      ) {
-        possibilidades = [...possibilidades, [proxX, proxY]];
+      if (cheque) {
+        possibilidades = [...possibilidades, m]
       }
-    }
+    });
 
     return possibilidades;
-  }
-
-  _validarPossibilidades(possibilidades) {
-    return possibilidades.filter(p => 
-      this.validarPossibilidade(p[0]) && this.validarPossibilidade(p[1])
-    );
   }
 
   validarPossibilidade(possibilidade) {
     return !(possibilidade < 0 || possibilidade > 7);
   }
 
-  *_movimentosDiagonais(tabuleiro, {posicaoX, posicaoY, tipo}){
+  _movimentosDiagonais(tabuleiro, {posicaoX, posicaoY, tipo}){
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
@@ -182,12 +147,12 @@ export class PecaService {
 
         if (peca && peca.tipo !== tipo) { break; }
       }
-
-      yield possibilidades;
     }
+
+    return possibilidades;
   }
 
-  *_movimentosPerpendiculares(tabuleiro, {posicaoX, posicaoY, tipo}){
+  _movimentosPerpendiculares(tabuleiro, {posicaoX, posicaoY, tipo}){
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
 
@@ -215,8 +180,106 @@ export class PecaService {
 
         if (peca && peca.tipo !== tipo) { break; }
       }
-
-      yield possibilidades;
     }
+
+    return possibilidades;
+  }
+
+  _movimentosRotacao(tabuleiro, {posicaoX, posicaoY, tipo}) {
+    let possibilidades = [];
+
+    for (let i = 1; i <= 8; i++) {
+      const multiX = i < 5 ? 1 : -1;
+      const multiY = i < 5 ? (i % 2 ? -1 : 1) : (i % 2 ? 1 : -1);
+
+      const proxX = i % 4 ? posicaoX - 1 * multiX : posicaoX;
+      const proxY = (i -1) % 4 ? posicaoY - 1 * multiY : posicaoY;
+      const peca = tabuleiro[`${proxX}${proxY}`] || {};
+
+      if (
+        this.validarPossibilidade(proxX) && 
+        this.validarPossibilidade(proxY) &&
+        peca.tipo !== tipo &&
+        peca.peca !== 'rei'
+      ) {
+        possibilidades = [...possibilidades, [proxX, proxY]];
+      }
+    }
+
+    return possibilidades;
+  }
+
+  _movimentoDiagonalSimples(tabuleiro, {posicaoX, posicaoY, tipo}) {
+    let possibilidades = [];
+    const multiX = tipo === 'peca-preta' ? 1 : -1;
+
+    const proxX = posicaoX + 1 * multiX;
+
+    for (let i = 0; i < 2; i++) {
+      const multiY = i % 2 ? 1 : -1;
+      const proxY = posicaoY + 1 * multiY;
+      const peca = tabuleiro[`${proxX}${proxY}`];
+
+      if (
+        this.validarPossibilidade(proxX) && 
+        this.validarPossibilidade(proxY) &&
+        peca &&
+        peca.tipo !== tipo && 
+        peca.peca !== 'rei'
+      ) {
+        possibilidades = [...possibilidades, [proxX, proxY]];
+      }
+    }
+
+    return possibilidades;
+  }
+
+  _estaEmChequeDiagonal(tabuleiro, peca) {
+    const movimentos = this._movimentosDiagonais(tabuleiro, peca);
+
+    const pecasCheque = ['rainha', 'bispo'];
+
+    return !!movimentos.find(m => {
+      const casa = tabuleiro[`${m[0]}${m[1]}`];
+      return casa && casa.tipo !== peca.tipo && pecasCheque.includes(casa.peca);
+    });
+  }
+
+  _estaEmChequePerpendicular(tabuleiro, peca) {
+    const movimentos = this._movimentosPerpendiculares(tabuleiro, peca);
+
+    const pecasCheque = ['rainha', 'torre'];
+
+    return !!movimentos.find(m => {
+      const casa = tabuleiro[`${m[0]}${m[1]}`];
+      return casa && pecasCheque.includes(casa.peca);
+    });
+  }
+
+  _estaEmChequeRotacao(tabuleiro, peca) {
+    const movimentos = this._movimentosRotacao(tabuleiro, peca);
+
+    return !!movimentos.find(m => {
+      const casa = tabuleiro[`${m[0]}${m[1]}`];
+      return casa && casa.peca === 'rei';
+    });
+  }
+
+  _estaEmChequeL(tabuleiro, peca){
+    const movimentos = this.movimentosCavalo(tabuleiro, peca);
+    
+    return !!movimentos.find(m => {
+      const casa = tabuleiro[`${m[0]}${m[1]}`];
+      return casa && casa.peca === 'cavalo';
+    });
+  }
+
+  _estaEmChequeDiagonalSimples(tabuleiro, peca) {
+    const movimentos = this._movimentoDiagonalSimples(tabuleiro, peca);
+    
+    return !!movimentos.find(m => {
+      const casa = tabuleiro[`${m[0]}${m[1]}`];
+      return casa && casa.peca === 'peao';
+    });
   }
 }
