@@ -19,6 +19,10 @@ export class PecaService {
     }
   }
 
+  estaEmCheque(tabuleiro, peca) {
+
+  }
+
   movimentosPeao(tabuleiro, { posicaoX, posicaoY, jogada, tipo}) {
     posicaoX = +posicaoX;
     posicaoY = +posicaoY;
@@ -32,7 +36,7 @@ export class PecaService {
       const proxY = posicaoY + 1 * multiY;
       const peca = tabuleiro[`${proxX}${proxY}`];
 
-      if (peca && peca.tipo !== tipo) {
+      if (peca && peca.tipo !== tipo && peca.peca !== 'rei') {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
     }
@@ -66,7 +70,8 @@ export class PecaService {
       if (
         this.validarPossibilidade(proxX) && 
         this.validarPossibilidade(proxY) &&
-        peca.tipo !== tipo
+        peca.tipo !== tipo &&
+        peca.peca !== 'rei'
       ) {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
@@ -130,7 +135,8 @@ export class PecaService {
       if (
         this.validarPossibilidade(proxX) && 
         this.validarPossibilidade(proxY) &&
-        peca.tipo !== tipo
+        peca.tipo !== tipo &&
+        peca.peca !== 'rei'
       ) {
         possibilidades = [...possibilidades, [proxX, proxY]];
       }
@@ -167,7 +173,7 @@ export class PecaService {
         
         if (
           !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
-          (peca && peca.tipo === tipo)
+          (peca && (peca.tipo === tipo || peca.peca === 'rei'))
         ) {
           break;
         }
@@ -200,7 +206,7 @@ export class PecaService {
 
         if (
           !(this.validarPossibilidade(proxX) && this.validarPossibilidade(proxY)) ||
-          (peca && peca.tipo === tipo)
+          (peca && (peca.tipo === tipo || peca.peca === 'rei'))
         ) {
           break;
         }
