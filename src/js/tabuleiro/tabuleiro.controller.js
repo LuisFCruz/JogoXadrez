@@ -20,15 +20,17 @@ export class TabuleiroController {
 
   posicionarPeca(peca) {
     if (!peca) return;
-    const { posicaoX, posicaoY, nomePeca: className} = peca;
+    const { posicaoX, posicaoY, tipo, nomePeca: className} = peca;
     const casa = document.querySelector(`#c${posicaoX}${posicaoY}`);
+    casa.classList.add(tipo);
     casa.classList.add(className);
   }
 
   removerPeca(peca) {
     if (!peca) return;
-    const { posicaoX, posicaoY, nomePeca: className} = peca;
+    const { posicaoX, posicaoY, tipo, nomePeca: className} = peca;
     const casa = document.querySelector(`#c${posicaoX}${posicaoY}`);
+    casa.classList.remove(tipo);
     casa.classList.remove(className);
   }
 

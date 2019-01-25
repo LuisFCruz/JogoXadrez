@@ -2,17 +2,27 @@ import { TabuleiroController } from '../tabuleiro/tabuleiro.controller';
 import { PecaService } from '../pecas/pecas.service';
 import { JogoService } from './jogo.service';
 import { PecaTabuleiro } from '../models/peca-tabuleiro';
+import { Jogador } from '../models/jogador';
 
 export class JogoController {
   constructor() {
     this._pecas = {};
     this._pecasDiff = {};
     this._pecaSelecionada = null;
+    this._jogadorBranco = new Jogador('branco', [0, 4]);
+    this._jogadoPreto = new Jogador('preto', [7, 4]);
+
     this.vezDeJogar = 'peca-branca';
     this.tabuleiroController = new TabuleiroController();
     this.pecasService = new PecaService();
     this.jogoService = new JogoService();
     this.inicializar();
+  }
+
+  get jogador() {
+    return this.vezDeJogar === 'peca-branca' ?
+      this._jogadorBranco :
+      this._jogadoPreto;
   }
 
   peca(posicaoX, posicaoY) {
@@ -45,30 +55,26 @@ export class JogoController {
   }
 
   selecionarPeca() {
+
     this.tabuleiroController.tabuleiro.addEventListener('click', ({ target }) => {
       if (target.nodeName !== 'DIV') {
         return;
       }
-
-      this.tabuleiroController.removerDicas();
-
-      const { posicaoX, posicaoY } = target.dataset;
-      const peca = this.peca(posicaoX, posicaoY);
       
-      if (!this._pecaSelecionada && peca && this.vezDeJogar !== peca.tipo) {
-        return;
-      }
-
-      if (this._pecaSelecionada && (!peca || this.vezDeJogar !== peca.tipo )) {
-        this.moverPeca(+posicaoX, +posicaoY);
-        return;
-      }
-
-      this._pecaSelecionada = peca;
-      if (this._pecaSelecionada) {
+      this.tabuleiroController.removerDicas();
+      const { posicaoX, posicaoY } = target.dataset;
+      
+      if (target.classList.contains(this.vezDeJogar)) {
+        
+        const peca = this.peca(posicaoX, posicaoY);
+        this._pecaSelecionada = peca;
         const movimentos = this.pecasService.obterMovimentos(this._pecas, this._pecaSelecionada);
         this.tabuleiroController.mostrarDicas(peca, movimentos);
+
+      } else {
+        this.moverPeca(+posicaoX, +posicaoY);
       }
+
     });
   }
 
@@ -90,6 +96,10 @@ export class JogoController {
       this.posicionarPecas();
 
       this._pecaSelecionada = null;
+
+      if (novaPeca.peca === 'rei'){
+        this.jogador.posicaoRei = [novaPeca.posicaoX, posicaoY];
+      }
 
       this.vezDeJogar = this.vezDeJogar === 'peca-branca' ? 'peca-preta' : 'peca-branca';
     }
